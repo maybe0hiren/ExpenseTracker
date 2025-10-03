@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private Uri imageUri;
     private ImageView imagePreview;
     private TextView geminiResult;
-    private Button btnSendToGemini;
+    private Button buttonSendToGemini;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
 
         imagePreview = findViewById(R.id.imageTransactionScreenshot);
         geminiResult = findViewById(R.id.textGeminiResult);
-        btnSendToGemini = findViewById(R.id.buttonSendToGemini);
-        btnSendToGemini.setVisibility(View.GONE); // Hide send button initially
+        buttonSendToGemini = findViewById(R.id.buttonSendToGemini);
+        buttonSendToGemini.setVisibility(View.GONE); // Hide send button initially
         Button addTransaction = findViewById(R.id.buttonAddTransaction);
         addTransaction.setOnClickListener(v -> imageSelector());
 
-        btnSendToGemini.setOnClickListener(v -> {
+        buttonSendToGemini.setOnClickListener(v -> {
             if (imageUri != null) {
                 sendImageToGemini();
             } else {
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void imageSelector(){
+    private void imageSelector() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -70,32 +70,19 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();
-            storeImageInTemp(imageUri);
             imagePreview.setImageURI(imageUri);
-            btnSendToGemini.setVisibility(View.VISIBLE); // Show send button after image selected
+            buttonSendToGemini.setVisibility(View.VISIBLE);
         }
     }
 
-    private void storeImageInTemp(Uri uri) {
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            File tempFile = new File(getCacheDir(), "temp_image.jpg");
-            OutputStream outputStream = new FileOutputStream(tempFile);
-
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, len);
-            }
-
-            outputStream.close();
-            inputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private void sendImageToGemini() {
+        new Transaction(this, imageUri, transaction -> {
+            geminiResult.setText(
+                    "Receiver: " + transaction.getReceiver() + "\n" +
+                            "Date: " + transaction.getDate() + "\n" +
+                            "Amount: " + transaction.getAmount()
+            );
+        });
     }
-    
 }
