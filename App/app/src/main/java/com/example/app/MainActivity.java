@@ -91,7 +91,16 @@ public class MainActivity extends AppCompatActivity {
                     String date = dateFormat.format(new java.util.Date(dateMillis));
                     String time = timeFormat.format(new java.util.Date(dateMillis));
 
-
+                    Transaction transaction = new Transaction(address, body, date, time);
+                    if(!transaction.getID().equals("XXX")) {
+                        transactionDetails.append(
+                                transaction.getID() + "\n"
+                                        + transaction.getReceiver() + "\n"
+                                        + String.valueOf(transaction.getAmount()) + "\n"
+                                        + transaction.getDate() + "\n"
+                                        + transaction.getTime() + "\n\n"
+                        );
+                    }
                     count++;
                 } while (cursor.moveToNext() && count < 10);
             }
