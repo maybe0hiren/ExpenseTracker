@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
                         );
                     }
                     count++;
-                } while (cursor.moveToNext() && count < 10);
+                } while (cursor.moveToNext());
             }
 
             if (cursor != null) cursor.close();
