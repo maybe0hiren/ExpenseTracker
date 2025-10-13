@@ -37,7 +37,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Transaction t = transactions.get(position);
         holder.receiver.setText(t.getReceiver());
-        holder.transactionDetails.setText("₹" + t.getAmount() + " • " + t.getDate() + " " + t.getTime());
+        holder.transactionDetails.setText("₹" + t.getAmount() + " • " + t.getDate());
     }
 
     @Override

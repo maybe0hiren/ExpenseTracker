@@ -21,7 +21,7 @@ public class Transaction {
             int amountStart = body.indexOf("Rs.");
             int amountEnd = body.indexOf(" for UPI ");
             int receiverStart = body.indexOf("payment to");
-            int receiverEnd = body.indexOf(" on ");
+            int receiverEnd = body.indexOf(" on ", receiverStart+11);
 
             if (amountStart == -1 || amountEnd == -1 || receiverStart == -1 || receiverEnd == -1) {
                 return;

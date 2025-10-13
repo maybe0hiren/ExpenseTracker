@@ -16,9 +16,91 @@
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.827" />
+        app:layout_constraintVertical_bias="0.54" />
+
+    <EditText
+        android:id="@+id/inputReceiver"
+        android:layout_width="170dp"
+        android:layout_height="39dp"
+        android:layout_marginBottom="96dp"
+        android:hint="Receiver's Name"
+        app:layout_constraintBottom_toTopOf="@+id/scrollTransactionSet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.128"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/inputAmountLessThan"
+        android:layout_width="170dp"
+        android:layout_height="39dp"
+        android:layout_marginBottom="96dp"
+        android:hint="Max amount"
+        app:layout_constraintBottom_toTopOf="@+id/scrollTransactionSet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.875"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/inputDate"
+        android:layout_width="170dp"
+        android:layout_height="39dp"
+        android:layout_marginBottom="28dp"
+        android:hint="Date: DD/MM/YY"
+        app:layout_constraintBottom_toTopOf="@+id/scrollTransactionSet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.128"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inputReceiver"
+        app:layout_constraintVertical_bias="0.783" />
+
+    <EditText
+        android:id="@+id/inputAmountMoreThan"
+        android:layout_width="170dp"
+        android:layout_height="39dp"
+        android:layout_marginBottom="28dp"
+        android:hint="Min Amount"
+        app:layout_constraintBottom_toTopOf="@+id/scrollTransactionSet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.875"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inputReceiver"
+        app:layout_constraintVertical_bias="0.81" />
+
+    <Button
+        android:id="@+id/buttonGetTransactions"
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="48dp"
+        android:background="@drawable/rounded_corner_button"
+        android:text="Get Transactions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.128"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollTransactionSet"
+        app:layout_constraintVertical_bias="0.741" />
+
+    <Button
+        android:id="@+id/buttonDashboard"
+        android:layout_width="170dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="48dp"
+        android:background="@drawable/rounded_corner_button"
+        android:text="Dashboard"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.875"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollTransactionSet"
+        app:layout_constraintVertical_bias="0.774" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
