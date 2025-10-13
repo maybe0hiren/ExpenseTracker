@@ -8,17 +8,17 @@
     tools:context=".MainActivity">
 
 
-    <TextView
-        android:id="@+id/textTransactionDetails"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleX="1"
-        android:scaleY="1"
-        android:text="Details: \n\n"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/scrollTransactionSet"
+        android:layout_width="350dp"
+        android:layout_height="400dp"
+        android:padding="8dp"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.243"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.498" />
+        app:layout_constraintVertical_bias="0.827" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

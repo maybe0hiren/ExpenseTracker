@@ -6,12 +6,18 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.provider.Telephony;
+
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.LayoutInflater;
+import android.view.View;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -25,20 +31,25 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
     private static final int READ_SMS_PERMISSION_CODE = 101;
 
-    private TextView transactionDetails;
+    RecyclerView transactionSet;
+    private CardAdapter  adapter;
+    List<Transaction> transactionsSetList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
-        transactionDetails = findViewById(R.id.textTransactionDetails);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        transactionSet = findViewById(R.id.scrollTransactionSet);
+        transactionSet.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new CardAdapter(transactionsSetList);
+        transactionSet.setAdapter(adapter);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -49,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             );
         } else {
             readLatestSMS();
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -78,8 +90,6 @@ public class MainActivity extends AppCompatActivity {
             );
 
             if (cursor != null && cursor.moveToFirst()) {
-                int count = 0;
-
                 do {
                     String address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS));
                     String body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY));
@@ -92,16 +102,9 @@ public class MainActivity extends AppCompatActivity {
                     String time = timeFormat.format(new java.util.Date(dateMillis));
 
                     Transaction transaction = new Transaction(address, body, date, time);
-                    if(!transaction.getID().equals("XXX")) {
-                        transactionDetails.append(
-                                transaction.getID() + "\n"
-                                        + transaction.getReceiver() + "\n"
-                                        + String.valueOf(transaction.getAmount()) + "\n"
-                                        + transaction.getDate() + "\n"
-                                        + transaction.getTime() + "\n\n"
-                        );
+                    if(!transaction.getID().equals("XXX") && transaction.getReceiver().equals("ABC")) {
+                        transactionsSetList.add(transaction);
                     }
-                    count++;
                 } while (cursor.moveToNext());
             }
 
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            transactionDetails.setText("Failed to read SMS: " + e.getMessage());
+            System.out.println("Error!");
         }
     }
 }
