@@ -6,6 +6,11 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
 
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -40,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText inputAmountMoreThan;
     private double inputAmountMoreThanValue;
     private Button getTransactions;
+    private Button manageGroups;
+    private PopupWindow groupManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +65,17 @@ public class MainActivity extends AppCompatActivity {
         adapter = new CardAdapter(transactionsSetList);
         transactionSet.setAdapter(adapter);
 
+        manageGroups = findViewById(R.id.buttonManageGroups);
         inputReceiver = findViewById(R.id.inputReceiver);
         inputDate = findViewById(R.id.inputDate);
         inputAmountLessThan = findViewById(R.id.inputAmountLessThan);
         inputAmountMoreThan = findViewById(R.id.inputAmountMoreThan);
         getTransactions = findViewById(R.id.buttonGetTransactions);
 
+        manageGroups.setOnClickListener(v -> {
+            transactionSet.setVisibility(View.GONE);
+            showGroupManager(v);
+        });
         getTransactions.setOnClickListener(v -> {
             transactionsSetList.clear();
 
@@ -137,11 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     Transaction transaction = new Transaction(address, body, date, time);
 
                     if (!transaction.getID().equals("XXX")) {
-
-                        // Full receiver name from SMS
                         String receiverFull = transaction.getReceiver().toLowerCase();
-
-                        // Case-insensitive substring match for receiver
                         boolean receiverMatches = inputReceiverValue.equals("ANY") ||
                                 receiverFull.contains(inputReceiverValue);
 
@@ -165,5 +174,45 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(this, "Error reading SMS!", Toast.LENGTH_SHORT).show();
         }
+    }
+    private void showGroupManager(View anchorView){
+        View popupView = LayoutInflater.from(this).inflate(R.layout.groups_window, null);
+
+        // Create PopupWindow
+        groupManager = new PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true // focusable to handle clicks
+        );
+
+        groupManager.setAnimationStyle(R.style.PopupAnimation);
+
+        // Allow outside touch to dismiss (optional)
+        groupManager.setOutsideTouchable(true);
+        groupManager.setBackgroundDrawable(getDrawable(android.R.color.transparent));
+        groupManager.setOnDismissListener(() -> {
+            transactionSet.setVisibility(View.VISIBLE);
+        });
+
+        // Show popup at center
+        groupManager.showAtLocation(anchorView, Gravity.CENTER, 0, 0);
+
+        // Setup list data inside popup
+        ListView listView = popupView.findViewById(R.id.popupList);
+        List<String> data = Arrays.asList("Option 1", "Option 2", "Option 3", "Option 4");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
+        listView.setAdapter(adapter);
+
+        // Handle list clicks
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Toast.makeText(this, "Clicked: " + data.get(position), Toast.LENGTH_SHORT).show();
+        });
+
+        // Button inside popup
+        Button actionButton = popupView.findViewById(R.id.popupButton);
+        actionButton.setOnClickListener(v -> {
+            Toast.makeText(this, "Button inside popup clicked!", Toast.LENGTH_SHORT).show();
+        });
     }
 }
