@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void showGroupManager(View anchorView){
         View popupView = LayoutInflater.from(this).inflate(R.layout.groups_window, null);
+        LinearLayout formLayout = popupView.findViewById(R.id.formLayout);
 
         // Create PopupWindow
         groupManager = new PopupWindow(
@@ -209,10 +210,32 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Clicked: " + data.get(position), Toast.LENGTH_SHORT).show();
         });
 
+        Spinner colorSelector = popupView.findViewById(R.id.colorSelector);
+        ArrayAdapter<String> colorAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"Red", "Green", "Blue", "Yellow"});
+        colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        colorSelector.setAdapter(colorAdapter);
+
         // Button inside popup
-        Button actionButton = popupView.findViewById(R.id.popupButton);
-        actionButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Button inside popup clicked!", Toast.LENGTH_SHORT).show();
+        Button buttonAddTransaction = popupView.findViewById(R.id.buttonAddTransaction);
+        buttonAddTransaction.setOnClickListener(v -> {
+            listView.setVisibility(View.GONE);
+            formLayout.setVisibility(View.VISIBLE);
+            buttonAddTransaction.setVisibility((View.GONE));
+        });
+        Button buttonDone = popupView.findViewById(R.id.buttonDone);
+        EditText inputGroup = popupView.findViewById(R.id.inputGroup);
+        EditText inputReceiver = popupView.findViewById(R.id.inputReceiver);
+
+        buttonDone.setOnClickListener(v -> {
+            String groupName = inputGroup.getText().toString();
+            String receiverName = inputReceiver.getText().toString();
+            String color = colorSelector.getSelectedItem().toString();
+            Toast.makeText(this, "Group: " + groupName + "\nReceiver: " + receiverName + "\nColor: " + color, Toast.LENGTH_LONG).show();
+            formLayout.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+            buttonAddTransaction.setVisibility(View.VISIBLE);
         });
     }
 }

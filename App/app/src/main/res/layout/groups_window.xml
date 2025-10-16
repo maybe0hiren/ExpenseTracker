@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/groups_backdround"
+    android:background="@drawable/groups_background"
     android:elevation="10dp">
 
     <TextView
@@ -26,11 +26,47 @@
         android:dividerHeight="1dp" />
 
     <Button
-        android:id="@+id/popupButton"
+        android:id="@+id/buttonAddTransaction"
         android:background="@drawable/rounded_corner_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add Transaction"
         android:layout_marginTop="8dp" />
 
+    <LinearLayout
+        android:id="@+id/formLayout"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/inputGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Group Name" />
+
+        <EditText
+            android:id="@+id/inputReceiver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Receiver"
+            android:layout_marginTop="6dp" />
+
+        <Spinner
+            android:id="@+id/colorSelector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp" />
+
+        <Button
+            android:id="@+id/buttonDone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Done"
+            android:layout_marginTop="10dp" />
+    </LinearLayout>
+
 </LinearLayout>
+
+
