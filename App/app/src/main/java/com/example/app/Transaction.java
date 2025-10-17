@@ -45,9 +45,7 @@ public class Transaction {
             amount = 0.0;
         }
     }
-
     public String getReceiver() { return receiver; }
-    public String getTime() { return time; }
     public String getDate() { return date; }
     public double getAmount() { return amount; }
     public String getID() { return ID; }

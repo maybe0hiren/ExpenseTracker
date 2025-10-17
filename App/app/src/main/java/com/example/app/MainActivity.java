@@ -33,6 +33,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
     private static final int READ_SMS_PERMISSION_CODE = 101;
+    DatabaseHelper db;
 
     RecyclerView transactionSet;
     private CardAdapter adapter;
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        db = new DatabaseHelper(this);
 
         transactionSet = findViewById(R.id.scrollTransactionSet);
         transactionSet.setLayoutManager(new LinearLayoutManager(this));
@@ -175,67 +178,107 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Error reading SMS!", Toast.LENGTH_SHORT).show();
         }
     }
-    private void showGroupManager(View anchorView){
+    private void showGroupManager(View anchorView) {
         View popupView = LayoutInflater.from(this).inflate(R.layout.groups_window, null);
         LinearLayout formLayout = popupView.findViewById(R.id.formLayout);
+        Button buttonAddTransaction = popupView.findViewById(R.id.buttonAddTransaction);
+        Button buttonDone = popupView.findViewById(R.id.buttonDone);
+        EditText inputGroup = popupView.findViewById(R.id.inputGroup);
+        EditText inputReceiver = popupView.findViewById(R.id.inputReceiver);
+        Spinner colorSelector = popupView.findViewById(R.id.colorSelector);
+
+        // Map color names to hex codes for tinting
+        final String[] colorNames = {"Red", "Green", "Blue", "Yellow"};
+        final String[] colorHex = {"#FFCDD2", "#C8E6C9", "#BBDEFB", "#FFF9C4"}; // light tints
+
+        ArrayAdapter<String> colorAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                colorNames);
+        colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        colorSelector.setAdapter(colorAdapter);
 
         // Create PopupWindow
         groupManager = new PopupWindow(
                 popupView,
+                1000,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true // focusable to handle clicks
+                true
         );
-
         groupManager.setAnimationStyle(R.style.PopupAnimation);
-
-        // Allow outside touch to dismiss (optional)
         groupManager.setOutsideTouchable(true);
         groupManager.setBackgroundDrawable(getDrawable(android.R.color.transparent));
-        groupManager.setOnDismissListener(() -> {
-            transactionSet.setVisibility(View.VISIBLE);
-        });
-
-        // Show popup at center
+        groupManager.setOnDismissListener(() -> transactionSet.setVisibility(View.VISIBLE));
         groupManager.showAtLocation(anchorView, Gravity.CENTER, 0, 0);
 
-        // Setup list data inside popup
-        ListView listView = popupView.findViewById(R.id.popupList);
-        List<String> data = Arrays.asList("Option 1", "Option 2", "Option 3", "Option 4");
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
-        listView.setAdapter(adapter);
+        // --- RecyclerView for showing database rows ---
+        RecyclerView recyclerView = new RecyclerView(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Handle list clicks
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Toast.makeText(this, "Clicked: " + data.get(position), Toast.LENGTH_SHORT).show();
-        });
+        // Fixed height so popup doesn't shrink
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                500
+        );
+        recyclerView.setLayoutParams(params);
 
-        Spinner colorSelector = popupView.findViewById(R.id.colorSelector);
-        ArrayAdapter<String> colorAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                new String[]{"Red", "Green", "Blue", "Yellow"});
-        colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        colorSelector.setAdapter(colorAdapter);
+        // Load data from database
+        ArrayList<ReceiverModel> receivers = new ArrayList<>();
+        Cursor cursor = db.readAllRows();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String receiver = cursor.getString(cursor.getColumnIndexOrThrow("Receiver"));
+                String groupName = cursor.getString(cursor.getColumnIndexOrThrow("GroupName"));
+                String colour = cursor.getString(cursor.getColumnIndexOrThrow("Colour"));
+                receivers.add(new ReceiverModel(receiver, groupName, colour));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
 
-        // Button inside popup
-        Button buttonAddTransaction = popupView.findViewById(R.id.buttonAddTransaction);
+        FreqTransAdapter freqAdapter = new FreqTransAdapter(this, receivers, db);
+        recyclerView.setAdapter(freqAdapter);
+
+        // Add RecyclerView to popup layout above form
+        LinearLayout popupRoot = popupView.findViewById(R.id.popupRoot);
+        popupRoot.addView(recyclerView, 1);
+
+        // Show add form
         buttonAddTransaction.setOnClickListener(v -> {
-            listView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
             formLayout.setVisibility(View.VISIBLE);
-            buttonAddTransaction.setVisibility((View.GONE));
+            buttonAddTransaction.setVisibility(View.GONE);
         });
-        Button buttonDone = popupView.findViewById(R.id.buttonDone);
-        EditText inputGroup = popupView.findViewById(R.id.inputGroup);
-        EditText inputReceiver = popupView.findViewById(R.id.inputReceiver);
 
+        // Save new entry
         buttonDone.setOnClickListener(v -> {
-            String groupName = inputGroup.getText().toString();
-            String receiverName = inputReceiver.getText().toString();
-            String color = colorSelector.getSelectedItem().toString();
-            Toast.makeText(this, "Group: " + groupName + "\nReceiver: " + receiverName + "\nColor: " + color, Toast.LENGTH_LONG).show();
+            String groupName = inputGroup.getText().toString().trim();
+            String receiverName = inputReceiver.getText().toString().trim();
+            int selectedIndex = colorSelector.getSelectedItemPosition();
+            String color = colorHex[selectedIndex]; // store hex for tinting
+
+            if (groupName.isEmpty() || receiverName.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            boolean success = db.addRow(receiverName, groupName, color);
+            receiverName = receiverName.toLowerCase();
+            groupName = groupName.toLowerCase();
+            if (success) {
+                receivers.add(new ReceiverModel(receiverName, groupName, color));
+                freqAdapter.notifyItemInserted(receivers.size() - 1);
+                Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Error adding entry", Toast.LENGTH_SHORT).show();
+            }
+
+            inputGroup.setText("");
+            inputReceiver.setText("");
             formLayout.setVisibility(View.GONE);
-            listView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
             buttonAddTransaction.setVisibility(View.VISIBLE);
         });
     }
+
+
+
 }

@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/popupRoot"
     android:layout_width="300dp"
-    android:layout_height="wrap_content"
+    android:layout_height="300dp"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@drawable/groups_background"
@@ -18,20 +18,21 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <ListView
-        android:id="@+id/popupList"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerFreqTrans"
         android:layout_width="match_parent"
-        android:layout_height="262dp"
-        android:divider="#80FFFFFF"
-        android:dividerHeight="1dp" />
+        android:layout_height="142dp"
+        android:clipToPadding="false"
+        android:padding="4dp" />
 
     <Button
         android:id="@+id/buttonAddTransaction"
-        android:background="@drawable/rounded_corner_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Transaction"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_corner_button"
+        android:text="Add Transaction" />
 
     <LinearLayout
         android:id="@+id/formLayout"

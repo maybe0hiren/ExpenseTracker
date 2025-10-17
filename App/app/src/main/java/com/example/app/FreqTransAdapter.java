@@ -27,7 +27,7 @@ public class FreqTransAdapter extends RecyclerView.Adapter<FreqTransAdapter.View
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_card, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.freq_trans_card, parent, false);
         return new ViewHolder(view);
     }
 
@@ -42,12 +42,15 @@ public class FreqTransAdapter extends RecyclerView.Adapter<FreqTransAdapter.View
             int baseColor = Color.parseColor(item.getColour());
             int tintedColor = Color.argb(40, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor));
             holder.cardView.setCardBackgroundColor(tintedColor);
+            holder.textGroup.setBackgroundColor(tintedColor);
+            holder.textReceiver.setBackgroundColor(tintedColor);
+
         } catch (Exception e) {
             holder.cardView.setCardBackgroundColor(Color.argb(30, 0, 0, 0)); // fallback
         }
 
         // Delete button logic
-        holder.btnAction.setOnClickListener(v -> {
+        holder.buttonDelete.setOnClickListener(v -> {
             dbHelper.removeRow(item.getReceiver());
             list.remove(position);
             notifyItemRemoved(position);
@@ -61,14 +64,14 @@ public class FreqTransAdapter extends RecyclerView.Adapter<FreqTransAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textReceiver, textGroup;
-        Button btnAction;
+        Button buttonDelete;
         CardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textReceiver = itemView.findViewById(R.id.textReceiver);
             textGroup = itemView.findViewById(R.id.textGroup);
-            btnAction = itemView.findViewById(R.id.btnAction);
+            buttonDelete = itemView.findViewById(R.id.buttonDelete);
             cardView = itemView.findViewById(R.id.cardView);
         }
     }
