@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         transactionSet = findViewById(R.id.scrollTransactionSet);
         transactionSet.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new CardAdapter(transactionsSetList);
+        adapter = new CardAdapter(transactionsSetList, db);
         transactionSet.setAdapter(adapter);
 
         manageGroups = findViewById(R.id.buttonManageGroups);
