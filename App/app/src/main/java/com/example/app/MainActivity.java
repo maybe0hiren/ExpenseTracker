@@ -2,6 +2,7 @@ package com.example.app;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private double inputAmountMoreThanValue;
     private Button getTransactions;
     private Button manageGroups;
+    private Button dashboardButton;
     private PopupWindow groupManager;
 
     @Override
@@ -74,11 +76,18 @@ public class MainActivity extends AppCompatActivity {
         inputAmountLessThan = findViewById(R.id.inputAmountLessThan);
         inputAmountMoreThan = findViewById(R.id.inputAmountMoreThan);
         getTransactions = findViewById(R.id.buttonGetTransactions);
+        dashboardButton = findViewById(R.id.buttonDashboard);
 
         manageGroups.setOnClickListener(v -> {
             transactionSet.setVisibility(View.GONE);
             showGroupManager(v);
         });
+
+        dashboardButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+            startActivity(intent);
+        });
+
         getTransactions.setOnClickListener(v -> {
             transactionsSetList.clear();
 
