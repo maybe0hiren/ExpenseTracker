@@ -84,7 +84,6 @@ public class DashboardActivity extends AppCompatActivity {
                 Transaction transaction = new Transaction(address, body, date, time);
 
                 if (transaction.getAmount() > 0 && !transaction.getReceiver().equals("XXX")) {
-                    // **THE CRITICAL FIX IS HERE**
                     // We must use the receiver parsed from the SMS body, not the sender's address.
                     String parsedReceiver = transaction.getReceiver().toLowerCase();
 
